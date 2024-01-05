@@ -25,7 +25,7 @@ switch ($method) {
         getUsers($databaseConnection);
         break;
     case 'POST':
-        echo "insertar registros";
+        addUser($databaseConnection);
         break;
     case 'PUT':
         echo "Actualizar registros";
@@ -58,6 +58,27 @@ function getUsers($connection){
     } else {
         echo "Error al extraer la data de la base de datos ";
     }
+}
+
+// add an user
+function addUser($connection){
+    // parse to json format, getting the data of object insert in thunder client
+    $newUser = json_decode(file_get_contents("php://input"), true);
+    $name = $newUser["nombre"];
+    
+    // sql query
+    $sql = "INSERT INTO usuarios(nombre) VALUES('$name')";
+    $result = $connection->query($sql);
+    
+    if ($result) {
+        // returns the last added id
+        $newUser['id'] = $connection->insert_id;
+        echo json_encode($newUser); // muestra a el usuario ingresado 
+
+    } else{
+        echo array("error"=>"Error al ingresar el usuario");
+    }
+    
 }
 
 ?>
